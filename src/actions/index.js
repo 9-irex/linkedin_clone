@@ -1,11 +1,17 @@
-import { auth, provider } from "../firebase";
+import { authorization, provider } from "../firebase";
+import { SET_USER } from "./actionType";
 
-const signAPI = () => {
+export const setUser = (payload) => ({
+  type: SET_USER,
+  user: payload,
+});
+
+export const signAPI = () => {
   return (dispatch) => {
-    auth
+    authorization
       .signInWithPopup(provider)
       .then((payload) => {
-        console.log(payload);
+        dispatch(setUser(payload.user));
       })
       .catch((err) => {
         alert(err.message);
@@ -13,4 +19,23 @@ const signAPI = () => {
   };
 };
 
-export default signAPI;
+export const getUserAuth = () => {
+  return (dispatch) => {
+    authorization.onAuthStateChanged(async (user) => {
+      dispatch(setUser(user));
+    });
+  };
+};
+
+export const logOut = () => {
+  return (dispatch) => {
+    authorization
+      .signOut()
+      .then(() => {
+        dispatch(setUser(null));
+      })
+      .catch((err) => {
+        alert(err.message);
+      }) ;
+  };
+};

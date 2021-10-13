@@ -1,8 +1,12 @@
 import styled from "styled-components";
+import { connect } from "react-redux";
+import { logOut } from "../actions";
+import { Redirect } from "react-router";
 
 const Header = (props) => {
   return (
     <Container>
+      {!props.user && <Redirect to="/" />}
       <Content>
         <Logo>
           <a href="/home">
@@ -27,47 +31,53 @@ const Header = (props) => {
             </NavList>
 
             <NavList>
-             <a href>
+              <a href>
                 <img src="/images/nav-network.svg" alt="" />
                 <span>My Network</span>
               </a>
             </NavList>
 
             <NavList>
-             <a href>
+              <a href>
                 <img src="/images/nav-jobs.svg" alt="" />
                 <span>Jobs</span>
               </a>
             </NavList>
 
             <NavList>
-             <a href>
+              <a href>
                 <img src="/images/nav-messaging.svg" alt="" />
                 <span>Messaging</span>
               </a>
             </NavList>
 
             <NavList>
-             <a href>
+              <a href>
                 <img src="/images/nav-notifications.svg" alt="" />
                 <span>Notifications</span>
               </a>
             </NavList>
 
             <User>
-             <a href>
-                <img src="/images/user.svg" alt="" />
-                <span>Me</span>
-                <img src="/images/down-icon.svg" alt="" />
+              <a href>
+                {props.user && props.user.photoURL ? (
+                  <img src={props.user.photoURL} alt="" />
+                ) : (
+                  <img src="/images/user.svg" alt="" />
+                )}
+                <span>
+                  Me
+                  <img src="/images/down-icon.svg" alt="" />
+                </span>
               </a>
 
-              <SignOut>
-               <a href>Sign Out</a>
+              <SignOut onClick={() => props.logOut()}>
+                <a href>Sign Out</a>
               </SignOut>
             </User>
 
             <Work>
-             <a href>
+              <a href>
                 <img src="/images/nav-work.svg" alt="" />
                 <span>
                   Work
@@ -81,8 +91,6 @@ const Header = (props) => {
     </Container>
   );
 };
-
-
 
 const Container = styled.div`
   background-color: white;
@@ -252,4 +260,14 @@ const Work = styled(User)`
   border-left: 1px solid rgba(0, 0, 0, 0.08);
 `;
 
-export default Header;
+const mapDispatchToProps = (dispatch) => ({
+  logOut: () => dispatch(logOut()),
+});
+
+const mapStateToProps = (state) => {
+  return {
+    user: state.useState.user,
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header);
